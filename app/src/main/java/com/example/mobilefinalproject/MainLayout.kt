@@ -71,14 +71,14 @@ class MainLayout : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
                 val document = task.result
 
                 // SET DATA TO SIDEBAR
-                if (document?.getString("profile_picture") == null){
-                    ivAvatar.setImageResource(R.drawable.placeholder_avatar)
-                }else{
-                    Picasso.with(this)
-                        .load("http://static1.gamespot.com/uploads/original/1550/15507091/2867734-7512874458-CAK00.jpg")
-                        .placeholder(R.drawable.placeholder_avatar)
-                        .into(ivAvatar)
-                }
+//                if (document?.getString("profile_picture") == null){
+                    //                    ivAvatar.setImageResource(R.drawable.placeholder_avatar)
+//                }else{
+//                    Picasso.get(this)
+//                        .load("http://static1.gamespot.com/uploads/original/1550/15507091/2867734-7512874458-CAK00.jpg")
+//                        .placeholder(R.drawable.placeholder_avatar)
+//                        .into(ivAvatar)
+//                }
 
                 tvName.setText(document?.getString("name"))
                 tvEmail.setText(document?.getString("email"))

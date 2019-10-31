@@ -10,13 +10,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.mobilefinalproject.Adapter.AdapterProduct
+import com.example.mobilefinalproject.Models.ProductModel
 import com.example.mobilefinalproject.R
 import com.example.mobilefinalproject.SupplierProductAdd
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Source
 
-class SupplierFragment : Fragment() {
+class SupplierFragment : Fragment(){
+
     companion object {
         fun newInstance(): SupplierFragment{
             return SupplierFragment()
@@ -35,9 +42,10 @@ class SupplierFragment : Fragment() {
 
     var SUPPLIER_STATUS : Boolean = false
 
+    lateinit var adapter : AdapterProduct
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view =  inflater.inflate(R.layout.content_supplier, container, false)
-
 
         etShopName = view.findViewById<EditText>(R.id.etShopName)
         etShopDescription  = view.findViewById<EditText>(R.id.etShopDescription)
@@ -48,6 +56,14 @@ class SupplierFragment : Fragment() {
         list_product  = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list_product)
 
         pbBar.setVisibility(View.VISIBLE)
+
+        // LOAD PRODUCT
+        loadProduct()
+
+        // ITEM ON CLICK
+        adapter.setOnItemClickListener { documentSnapshot, position ->
+            Toast.makeText(this.context, "id ${documentSnapshot.id}", Toast.LENGTH_LONG).show();
+        }
 
         // COLLECT USER DATA
         val docRef = db.collection("users").document(
@@ -69,7 +85,6 @@ class SupplierFragment : Fragment() {
                     list_product.setVisibility(View.VISIBLE)
                     fab_add_product.show()
 
-                    // LOAD PRODUCT
 
 
                 }
@@ -128,6 +143,32 @@ class SupplierFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun loadProduct() {
+        val query : Query = db.collection("products")
+
+        val options =
+            FirestoreRecyclerOptions.Builder<ProductModel>().
+                setQuery(query, ProductModel::class.java)
+            .build()
+
+        adapter = AdapterProduct(options)
+
+        list_product.setHasFixedSize(true)
+        list_product.layoutManager = LinearLayoutManager(activity)
+        list_product.setAdapter(adapter)
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
     }
 
 }

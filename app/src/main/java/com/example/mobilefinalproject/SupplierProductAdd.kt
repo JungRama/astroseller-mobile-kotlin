@@ -123,6 +123,30 @@ class SupplierProductAdd : AppCompatActivity() {
 
                         }
                     }
+            }else{
+                var product = hashMapOf(
+                    "user_id" to FirebaseAuth.getInstance().currentUser!!.uid.toString(),
+                    "product_name" to productName,
+                    "product_image" to null,
+                    "product_price" to productPrice,
+                    "product_description" to productDescription
+                )
+
+                db.collection("products")
+                    .document()
+                    .set(product as Map<String, Any>)
+                    .addOnSuccessListener { documentReference ->
+
+                        val toast = Toast.makeText(this, "Add Product Success", Toast.LENGTH_SHORT)
+                        toast.show()
+
+                        pbBar.setVisibility(View.GONE)
+
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.d("Main", "DocumentSnapshot added with ID: ${e}")
+                    }
             }
 
 

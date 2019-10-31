@@ -7,6 +7,8 @@ class Product {
     var product_price:String?=null
     var product_description:String?=null
 
+
+
     constructor(
         user_id: String?,
         product_id: String?,
