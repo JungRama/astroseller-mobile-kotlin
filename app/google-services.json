@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "488183781022",
+    "firebase_url": "https://tugas-kampus-marketplace.firebaseio.com",
+    "project_id": "tugas-kampus-marketplace",
+    "storage_bucket": "tugas-kampus-marketplace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488183781022:android:aec00caf93b4aaa57c8d8f",
+        "android_client_info": {
+          "package_name": "a.a.c"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488183781022-l80f9m41kgcetjf5u4egq9fk9c531qn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKFDV2GIMNtMF_VUux3Mw-B8vpTpy1AQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488183781022-l80f9m41kgcetjf5u4egq9fk9c531qn8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488183781022:android:84fee59e48ccb07f7c8d8f",
+        "android_client_info": {
+          "package_name": "com.example.mobilefinalproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488183781022-hn7284i4dcl7u38ecj4dkqce6n74t7da.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobilefinalproject",
+            "certificate_hash": "f252e24c2d6ebfffa8ebf9c5c4fb9a31c1cd4d64"
+          }
+        },
+        {
+          "client_id": "488183781022-l80f9m41kgcetjf5u4egq9fk9c531qn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKFDV2GIMNtMF_VUux3Mw-B8vpTpy1AQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488183781022-l80f9m41kgcetjf5u4egq9fk9c531qn8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
