@@ -79,13 +79,13 @@ class EditProfileFragment : Fragment() {
             if (task.isSuccessful) {
                 val document = task.result
 
-                etName.setText(document.getString("name"))
-                etPhone.setText(document.getString("phone"))
-                etAddress.setText(document.getString("address"))
-                etShopName.setText(document.getString("shop_name"))
-                etShopDescription.setText(document.getString("shop_description"))
+                etName.setText(document?.getString("name"))
+                etPhone.setText(document?.getString("phone"))
+                etAddress.setText(document?.getString("address"))
+                etShopName.setText(document?.getString("shop_name"))
+                etShopDescription.setText(document?.getString("shop_description"))
 
-                SUPPLIER_STATUS = document.getBoolean("supplier_status")!!
+                SUPPLIER_STATUS = document?.getBoolean("supplier_status")!!
 
                 if(SUPPLIER_STATUS!=false){
                     form_supplier.setVisibility(View.VISIBLE)

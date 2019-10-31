@@ -71,7 +71,7 @@ class MainLayout : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
                 val document = task.result
 
                 // SET DATA TO SIDEBAR
-                if (document.getString("profile_picture") == null){
+                if (document?.getString("profile_picture") == null){
                     ivAvatar.setImageResource(R.drawable.placeholder_avatar)
                 }else{
                     Picasso.with(this)
@@ -80,8 +80,8 @@ class MainLayout : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
                         .into(ivAvatar)
                 }
 
-                tvName.setText(document.getString("name"))
-                tvEmail.setText(document.getString("email"))
+                tvName.setText(document?.getString("name"))
+                tvEmail.setText(document?.getString("email"))
 
                 Log.d("DATA", "Cached document data: ${document?.data}")
             } else {
