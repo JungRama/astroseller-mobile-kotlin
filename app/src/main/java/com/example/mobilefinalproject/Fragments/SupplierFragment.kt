@@ -15,6 +15,7 @@ import com.example.mobilefinalproject.Adapter.AdapterProduct
 import com.example.mobilefinalproject.Models.ProductModel
 import com.example.mobilefinalproject.R
 import com.example.mobilefinalproject.SupplierProductAdd
+import com.example.mobilefinalproject.SupplierProductEdit
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -47,7 +48,7 @@ class SupplierFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         var view =  inflater.inflate(R.layout.content_supplier, container, false)
 
-        etShopName = view.findViewById<EditText>(R.id.etShopName)
+        etShopName = view.findViewById(R.id.etShopName)
         etShopDescription  = view.findViewById<EditText>(R.id.etShopDescription)
         pbBar  = view.findViewById<ProgressBar>(R.id.pbBar)
         btnRegisterSupplier  = view.findViewById<Button>(R.id.btnRegisterSupplier)
@@ -59,10 +60,14 @@ class SupplierFragment : Fragment(){
 
         // LOAD PRODUCT
         loadProduct()
+        adapter.startListening()
 
         // ITEM ON CLICK
         adapter.setOnItemClickListener { documentSnapshot, position ->
-            Toast.makeText(this.context, "id ${documentSnapshot.id}", Toast.LENGTH_LONG).show();
+//            Toast.makeText(this.context, "id ${documentSnapshot.id}", Toast.LENGTH_LONG).show();
+            val intent = Intent(context, SupplierProductEdit::class.java)
+            intent.putExtra("id", documentSnapshot.id)
+            startActivity(intent)
         }
 
         // COLLECT USER DATA
@@ -84,9 +89,6 @@ class SupplierFragment : Fragment(){
                 }else{
                     list_product.setVisibility(View.VISIBLE)
                     fab_add_product.show()
-
-
-
                 }
 
                 Log.d("DATA", "Cached document data: ${document?.data}")
@@ -146,7 +148,7 @@ class SupplierFragment : Fragment(){
     }
 
     private fun loadProduct() {
-        val query : Query = db.collection("products")
+        val query : Query = db.collection("products").whereEqualTo("user_id", FirebaseAuth.getInstance().currentUser!!.uid.toString())
 
         val options =
             FirestoreRecyclerOptions.Builder<ProductModel>().
@@ -166,9 +168,14 @@ class SupplierFragment : Fragment(){
         adapter.startListening()
     }
 
-    override fun onStop() {
-        super.onStop()
-        adapter.stopListening()
+    override fun onResume() {
+        super.onResume()
+        adapter.startListening()
     }
+
+//    override fun onStop() {
+//        super.onStop()
+//        adapter.stopListening()
+//    }
 
 }

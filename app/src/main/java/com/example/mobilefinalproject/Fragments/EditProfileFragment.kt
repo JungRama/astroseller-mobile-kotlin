@@ -1,6 +1,7 @@
 package com.example.mobilefinalproject.Fragments
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.ClipDescription
 import android.content.ContentResolver
 import android.content.Context
@@ -136,7 +137,8 @@ class EditProfileFragment : Fragment() {
                     )
                 }
 
-                pbBar.setVisibility(View.VISIBLE)
+                val progress = ProgressDialog.show(activity, "",
+                    "Please Wait ...", false);
 
                 db.collection("users")
                     .document(FirebaseAuth.getInstance().currentUser!!.uid.toString())
@@ -146,11 +148,12 @@ class EditProfileFragment : Fragment() {
                         val toast = Toast.makeText(context!!, "Edit Profile Success", Toast.LENGTH_SHORT)
                         toast.show()
 
-                        pbBar.setVisibility(View.GONE)
+                        progress.dismiss()
 
                     }
                     .addOnFailureListener { e ->
                         Log.d("Main", "DocumentSnapshot added with ID: ${e}")
+                        progress.dismiss()
                     }
             }
         }

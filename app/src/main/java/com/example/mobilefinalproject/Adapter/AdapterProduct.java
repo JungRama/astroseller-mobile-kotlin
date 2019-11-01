@@ -1,7 +1,6 @@
 package com.example.mobilefinalproject.Adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.text.NumberFormat;
+
 public class AdapterProduct extends FirestoreRecyclerAdapter<ProductModel, AdapterProduct.ProductHolder> {
 
     private OnItemClickListener listener;
@@ -29,17 +30,16 @@ public class AdapterProduct extends FirestoreRecyclerAdapter<ProductModel, Adapt
 
     @Override
     protected void onBindViewHolder(@NonNull ProductHolder holder, int position, @NonNull ProductModel model) {
+
         holder.tv_product_name.setText(model.getProduct_name());
-        holder.tv_product_price.setText("Rp. " + model.getProduct_price());
+        holder.tv_product_price.setText("Rp. " + NumberFormat.getInstance().format(Integer.valueOf(model.getProduct_price())));
 
-        if(model.getProduct_image()!=null){
-//            Picasso.with(holder.iv_product.getContext())
-//                    .load(model.getProduct_image())
-////                    .placeholder(R.drawable.placeholder_product)
-//                    .into(holder.iv_product);
-
-            Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(holder.iv_product);
-        }
+        Glide
+                .with(holder.iv_product.getContext())
+                .load(model.getProduct_image())
+                .centerCrop()
+                .placeholder(R.drawable.placeholder_product)
+                .into(holder.iv_product);
     }
 
     @NonNull

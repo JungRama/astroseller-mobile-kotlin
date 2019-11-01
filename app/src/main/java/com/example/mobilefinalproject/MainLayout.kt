@@ -1,5 +1,6 @@
 package com.example.mobilefinalproject
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -80,7 +81,6 @@ class MainLayout : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
 //                        .into(ivAvatar)
 //                }
 
-                tvName.setText(document?.getString("name"))
                 tvEmail.setText(document?.getString("email"))
 
                 Log.d("DATA", "Cached document data: ${document?.data}")
@@ -151,13 +151,6 @@ class MainLayout : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
 
                 actionBar!!.title = "Home"
             }
-            R.id.nav_shop -> {
-                supportFragmentManager.beginTransaction().replace(R.id.fragment_content,
-                    ShopFragment.newInstance()).commit()
-                navigationView.setCheckedItem(R.id.nav_shop);
-
-                actionBar!!.title = "Shop"
-            }
             R.id.nav_supplier -> {
                 supportFragmentManager.beginTransaction().replace(R.id.fragment_content,
                     SupplierFragment.newInstance()).commit()
@@ -173,13 +166,38 @@ class MainLayout : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
                 actionBar!!.title = "Edit Profile"
             }
             R.id.nav_sign_out -> {
-                auth.signOut()
-                intent = Intent(applicationContext, LoginActivity::class.java)
-                startActivity(intent)
 
-                sharedPreference.clearSharedPreference()
+                // Initialize a new instance of
+                val builder = AlertDialog.Builder(this)
 
-                Log.d("currentUser", "${auth.currentUser}")
+                // Set the alert dialog title
+                builder.setTitle("Sign Out")
+
+                // Display a message on alert dialog
+                builder.setMessage("Are you sure want to Sign Out ?")
+
+                // Set a positive button and its click listener on alert dialog
+                builder.setPositiveButton("Yes"){dialog, which ->
+                    auth.signOut()
+                    intent = Intent(applicationContext, LoginActivity::class.java)
+                    startActivity(intent)
+
+                    sharedPreference.clearSharedPreference()
+
+                    Log.d("currentUser", "${auth.currentUser}")
+                }
+
+                // Display a negative button on alert dialog
+                builder.setNegativeButton("No"){dialog, which ->
+                    dialog.dismiss();
+                }
+
+                // Finally, make the alert dialog using builder
+                val dialog: AlertDialog = builder.create()
+
+                // Display the alert dialog on app interface
+                dialog.show()
+
             }
         }
 

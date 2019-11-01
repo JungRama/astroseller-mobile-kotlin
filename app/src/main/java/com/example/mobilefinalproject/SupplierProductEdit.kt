@@ -1,36 +1,37 @@
 package com.example.mobilefinalproject
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Intent
-import android.media.Image
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.*
-import com.example.mobilefinalproject.Fragments.SupplierFragment
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.Task
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
+import kotlinx.android.synthetic.main.activity_supplier_product_edit.*
 import java.io.IOException
-import java.util.*
-import android.webkit.MimeTypeMap
-import android.content.ContentResolver
 
 
-class SupplierProductAdd : AppCompatActivity() {
+class SupplierProductEdit : AppCompatActivity() {
 
     lateinit var ivProduct: ImageView
     lateinit var etProductName: EditText
     lateinit var etProductPrice: EditText
     lateinit var etProductDescription: EditText
-    lateinit var btnAddProduct: Button
+    lateinit var btnEditProduct: Button
+    lateinit var btnDeleteProduct: Button
     lateinit var pbBar: ProgressBar
 
     var PICK_IMAGE_REQUEST = 71
@@ -38,11 +39,14 @@ class SupplierProductAdd : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_supplier_product_add)
+        setContentView(R.layout.activity_supplier_product_edit)
+
+        //GET ID
+        val product_id = intent.getStringExtra("id")
 
         // ACTION BAR
         val actionBar = supportActionBar
-        actionBar!!.title = "Add Product"
+        actionBar!!.title = "Edit Product"
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // COMPONENT
@@ -50,8 +54,12 @@ class SupplierProductAdd : AppCompatActivity() {
         etProductName = findViewById(R.id.etProductName)
         etProductPrice = findViewById(R.id.etProductPrice)
         etProductDescription = findViewById(R.id.etProductDescription)
-        btnAddProduct = findViewById(R.id.btnAddProduct)
+        btnEditProduct = findViewById(R.id.btnEditProduct)
+        btnDeleteProduct = findViewById(R.id.btnDeleteProduct)
         pbBar = findViewById(R.id.pbBar)
+
+        // PRODUCT NAME
+        var productName : String? = null
 
         // FIREBASE
         val db = FirebaseFirestore.getInstance()
@@ -65,10 +73,38 @@ class SupplierProductAdd : AppCompatActivity() {
             startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
         }
 
+        // COLLECT USER DATA
+        val docRef = db.collection("products").document(
+            product_id)
+        // Source can be CACHE, SERVER, or DEFAULT.
+        val source = Source.DEFAULT
+        // Get the document, forcing the SDK to use the offline cache
+        docRef.get(source).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val document = task.result
 
-        // INSERT IMAGE TO STORAGE
-        btnAddProduct.setOnClickListener {
+                Glide
+                    .with(applicationContext)
+                    .load(document?.getString("product_image"))
+                    .centerCrop()
+                    .placeholder(R.drawable.placeholder_product)
+                    .into(ivProduct)
 
+                // SET PRODUCT NAME
+                productName = document?.getString("product_name")
+
+                etProductName.setText(document?.getString("product_name"))
+                etProductPrice.setText(document?.getString("product_price"))
+                etProductDescription.setText(document?.getString("product_description"))
+
+
+                Log.d("DATA", "Cached document data: ${document?.data}")
+            } else {
+                Log.d("DATA", "Cached get failed: ", task.exception)
+            }
+        }
+
+        btnEditProduct.setOnClickListener {
             val productName = etProductName.getText().toString()
             val productPrice = etProductPrice.getText().toString()
             val productDescription = etProductDescription.getText().toString()
@@ -80,7 +116,6 @@ class SupplierProductAdd : AppCompatActivity() {
                 etProductPrice.setError("Price is required")
                 etProductPrice.requestFocus()
             }else{
-
                 val progress = ProgressDialog.show(this, "",
                     "Please Wait ...", false);
 
@@ -103,9 +138,9 @@ class SupplierProductAdd : AppCompatActivity() {
                             productStorage.downloadUrl.addOnSuccessListener {
 
                                 Log.d("downloadURL", it.toString())
+                                pbBar.setVisibility(View.GONE)
 
                                 var product = hashMapOf(
-                                    "user_id" to FirebaseAuth.getInstance().currentUser!!.uid.toString(),
                                     "product_name" to productName,
                                     "product_image" to it.toString(),
                                     "product_price" to productPrice,
@@ -113,11 +148,11 @@ class SupplierProductAdd : AppCompatActivity() {
                                 )
 
                                 db.collection("products")
-                                    .document()
-                                    .set(product as Map<String, Any>)
+                                    .document(product_id)
+                                    .update(product as Map<String, Any>)
                                     .addOnSuccessListener { documentReference ->
 
-                                        val toast = Toast.makeText(this, "Add Product Success", Toast.LENGTH_SHORT)
+                                        val toast = Toast.makeText(this, "Edit Product Success", Toast.LENGTH_SHORT)
                                         toast.show()
 
                                         progress.dismiss()
@@ -126,28 +161,22 @@ class SupplierProductAdd : AppCompatActivity() {
                                     }
                                     .addOnFailureListener { e ->
                                         Log.d("Main", "DocumentSnapshot added with ID: ${e}")
-                                        progress.dismiss()
                                     }
-
-
                             }
                         }
                 }else{
-
                     var product = hashMapOf(
-                        "user_id" to FirebaseAuth.getInstance().currentUser!!.uid.toString(),
                         "product_name" to productName,
-                        "product_image" to null,
                         "product_price" to productPrice,
                         "product_description" to productDescription
                     )
 
                     db.collection("products")
-                        .document()
-                        .set(product as Map<String, Any>)
+                        .document(product_id)
+                        .update(product as Map<String, Any>)
                         .addOnSuccessListener { documentReference ->
 
-                            val toast = Toast.makeText(this, "Add Product Success", Toast.LENGTH_SHORT)
+                            val toast = Toast.makeText(this, "Edit Product Success", Toast.LENGTH_SHORT)
                             toast.show()
 
                             progress.dismiss()
@@ -160,11 +189,39 @@ class SupplierProductAdd : AppCompatActivity() {
                 }
             }
         }
-    }
 
-    override fun onBackPressed() {
-        finish()
-        super.onBackPressed()
+        btnDeleteProduct.setOnClickListener {
+            // Initialize a new instance of
+            val builder = AlertDialog.Builder(this)
+
+            // Set the alert dialog title
+            builder.setTitle("Are you sure want to delete ?")
+
+            // Display a message on alert dialog
+            builder.setMessage("Are you sure want to delete ${productName} product")
+
+            // Set a positive button and its click listener on alert dialog
+            builder.setPositiveButton("Yes"){dialog, which ->
+                val progress = ProgressDialog.show(this, "",
+                    "Please Wait ...", false);
+                docRef.delete().addOnSuccessListener {
+                    finish()
+                    progress.dismiss()
+                }
+            }
+
+            // Display a negative button on alert dialog
+            builder.setNegativeButton("No"){dialog, which ->
+                dialog.dismiss();
+            }
+
+            // Finally, make the alert dialog using builder
+            val dialog: AlertDialog = builder.create()
+
+            // Display the alert dialog on app interface
+            dialog.show()
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -191,5 +248,4 @@ class SupplierProductAdd : AppCompatActivity() {
         // Returning the file Extension.
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri))
     }
-
 }

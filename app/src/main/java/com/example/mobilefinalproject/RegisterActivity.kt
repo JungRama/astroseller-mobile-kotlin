@@ -1,5 +1,6 @@
 package com.example.mobilefinalproject
 
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -18,8 +19,8 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         // ACTION BAR
-        val actionBar = supportActionBar
-        actionBar!!.title = "Sign Up"
+//        val actionBar = supportActionBar
+//        actionBar!!.title = "Sign Up"
 
         // FIREBASE
         var auth: FirebaseAuth
@@ -45,7 +46,6 @@ class RegisterActivity : AppCompatActivity() {
         val etPassword  = findViewById<EditText>(R.id.etPassword)
         val btnSignIn  = findViewById<Button>(R.id.btnSignIn)
 
-        val pbBar = findViewById<ProgressBar>(R.id.pbBar)
         val tvSignIn = findViewById<TextView>(R.id.tvSignIn)
 
         tvSignIn.setOnClickListener {
@@ -76,7 +76,8 @@ class RegisterActivity : AppCompatActivity() {
                 etPassword.requestFocus();
                 etPassword.setError("Password Min 6 Character");
             }else{
-                pbBar.setVisibility(View.VISIBLE)
+                val progress = ProgressDialog.show(this, "",
+                    "Please Wait ...", false);
 
                 // DATA
                 var user = hashMapOf(
@@ -98,7 +99,7 @@ class RegisterActivity : AppCompatActivity() {
                                 .document(FirebaseAuth.getInstance().currentUser!!.uid.toString())
                                 .set(user as Map<String, Any>)
                                 .addOnSuccessListener { documentReference ->
-                                    pbBar.setVisibility(View.GONE)
+                                    progress.dismiss()
 
                                     val toast = Toast.makeText(applicationContext, "Account success created, Sign in now", Toast.LENGTH_SHORT)
                                     toast.show()
@@ -112,13 +113,13 @@ class RegisterActivity : AppCompatActivity() {
                                     Log.d("Main", "DocumentSnapshot added with ID: ${e}")
                                 }
                         }else{
-                            pbBar.setVisibility(View.GONE)
+                            progress.dismiss()
                             val toast = Toast.makeText(applicationContext, "Failed to create an account", Toast.LENGTH_SHORT)
                             toast.show()
                         }
                     }
                     .addOnFailureListener{
-                        pbBar.setVisibility(View.GONE)
+                        progress.dismiss()
                         Log.d("Main", "Failed Login: ${it.message}")
                         Toast.makeText(this, "Email Already Used", Toast.LENGTH_SHORT).show()
                     }
