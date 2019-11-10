@@ -1,13 +1,11 @@
-# Mobile Astroseller Application : Writen in kotlin
+# Mobile Astroseller Application : Code in kotlin
 
-« Mobile Astroseller Application » is an **Android** application that used for seller to manage and publish their product 
+Mobile Astroseller Application » is an **Android** application that used for seller to manage and publish their product.
+for the database here i used Firebase-Firestore https://firebase.google.com/docs/firestore
 
 ## Features
 
- * Sign
-
-## Libraries
-
- * Retrofit - http://square.github.io/retrofit
- * Moshi - https://github.com/square/moshi
- * OkHttp - http://square.github.io/okhttp
+ * Sign in / Sign up as member
+ * Register as supplier
+ * Manage product & publish
+ * Send order message to seller
